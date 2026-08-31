@@ -27,8 +27,8 @@ const connectDB = async () => {
 
 const seedAdmin = async () => {
   try {
-    const adminEmail = "genzescom@gmail.com";
-    const defaultPassword = "Genzes@1234@#";
+    const adminEmail = "com@gmail.com";
+    const defaultPassword = "@1234@#";
 
     let admin = await Admin.findOne({ email: adminEmail });
 
