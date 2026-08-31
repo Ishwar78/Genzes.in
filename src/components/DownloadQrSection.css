@@ -1,0 +1,760 @@
+/* =========================================
+   GENZES QR DOWNLOAD SECTION
+========================================= */
+
+.qr-download-section {
+  position: relative;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  padding: 40px 24px;
+
+  background:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(255, 31, 190, 0.11),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 85% 50%,
+      rgba(0, 196, 255, 0.11),
+      transparent 32%
+    ),
+    #040404;
+
+  font-family: "Montserrat", sans-serif;
+
+  border-top:
+    1px solid rgba(255, 255, 255, 0.06);
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.06);
+}
+
+
+/* =========================================
+   BACKGROUND GLOW
+========================================= */
+
+.qr-download-glow {
+  position: absolute;
+
+  width: 380px;
+  height: 380px;
+
+  border-radius: 50%;
+
+  filter: blur(120px);
+
+  pointer-events: none;
+}
+
+
+.qr-glow-left {
+  left: -170px;
+  top: 10%;
+
+  background:
+    rgba(255, 0, 174, 0.18);
+}
+
+
+.qr-glow-right {
+  right: -170px;
+  bottom: 0;
+
+  background:
+    rgba(0, 202, 255, 0.16);
+}
+
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.qr-download-container {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+
+  max-width: 1500px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(420px, 0.8fr);
+
+  align-items: center;
+
+  gap: 90px;
+}
+
+
+/* =========================================
+   LEFT CONTENT
+========================================= */
+
+.qr-download-content {
+  max-width: 760px;
+}
+
+
+.qr-download-badge {
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px 16px;
+
+  margin-bottom: 25px;
+
+  border-radius: 100px;
+
+  border:
+    1px solid rgba(92, 236, 55, 0.25);
+
+  background:
+    rgba(107, 255, 55, 0.07);
+
+  color: #8aff62;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+}
+
+
+.qr-download-badge svg {
+  font-size: 15px;
+}
+
+
+.qr-download-content h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(46px, 5.5vw, 82px);
+
+  font-weight: 800;
+
+  line-height: 1.02;
+
+  letter-spacing: -3px;
+}
+
+
+.qr-download-content h2 span {
+  background:
+    linear-gradient(
+      90deg,
+      #ff38cd 0%,
+      #a94cff 32%,
+      #00c8ff 68%,
+      #8df32d 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+}
+
+
+.qr-download-content > p {
+  max-width: 680px;
+
+  margin: 28px 0;
+
+  color: #a6a6af;
+
+  font-size: 17px;
+
+  font-weight: 500;
+
+  line-height: 1.85;
+}
+
+
+/* =========================================
+   POINTS
+========================================= */
+
+.qr-download-points {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 12px 26px;
+
+  margin-bottom: 35px;
+}
+
+
+.qr-download-points div {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  color: #dadade;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+.qr-point-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff36cc,
+      #00caff
+    );
+
+  box-shadow:
+    0 0 10px rgba(255, 54, 204, 0.45);
+}
+
+
+/* =========================================
+   PLAY STORE BUTTON
+========================================= */
+
+.qr-playstore-button {
+  width: fit-content;
+
+  min-width: 220px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 14px 20px;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  border-radius: 15px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.16);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.10),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+.qr-playstore-button:hover {
+  transform: translateY(-4px);
+
+  border-color:
+    rgba(255, 58, 205, 0.4);
+
+  box-shadow:
+    0 20px 50px
+    rgba(255, 0, 185, 0.12);
+}
+
+
+.qr-playstore-button > svg:first-child {
+  font-size: 31px;
+
+  color: #ffffff;
+}
+
+
+.qr-playstore-button div {
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+.qr-playstore-button small {
+  font-size: 9px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+
+  color: #b6b6bd;
+}
+
+
+.qr-playstore-button strong {
+  font-size: 17px;
+
+  font-weight: 800;
+}
+
+
+.qr-button-arrow {
+  margin-left: auto;
+
+  font-size: 14px !important;
+
+  color: #7ee637 !important;
+}
+
+
+/* =========================================
+   QR RIGHT SIDE
+========================================= */
+
+.qr-download-right {
+  position: relative;
+
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+
+.qr-main-card {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 430px;
+
+  padding: 38px 35px;
+
+  text-align: center;
+
+  border-radius: 30px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.11);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.075),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  backdrop-filter: blur(15px);
+
+  box-shadow:
+    0 35px 90px
+    rgba(0, 0, 0, 0.55);
+}
+
+
+.qr-main-card::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -1px;
+
+  z-index: -1;
+
+  border-radius: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 51, 205, 0.23),
+      transparent 35%,
+      transparent 65%,
+      rgba(0, 204, 255, 0.2)
+    );
+}
+
+
+/* =========================================
+   QR ICON
+========================================= */
+
+.qr-card-icon {
+  width: 48px;
+  height: 48px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  color: #ff44d0;
+
+  font-size: 22px;
+
+  border:
+    1px solid rgba(255, 55, 204, 0.25);
+
+  background:
+    rgba(255, 44, 197, 0.08);
+}
+
+
+.qr-main-card h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 28px;
+
+  font-weight: 900;
+}
+
+
+.qr-main-card > p {
+  max-width: 330px;
+
+  margin:
+    12px auto 25px;
+
+  color: #91919a;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================
+   QR CODE
+========================================= */
+
+.qr-code-wrapper {
+  position: relative;
+
+  width: 230px;
+  height: 230px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin:
+    0 auto 20px;
+
+  padding: 15px;
+
+  border-radius: 24px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 45px
+    rgba(255, 255, 255, 0.10);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+.qr-code-wrapper:hover {
+  transform: scale(1.035);
+
+  box-shadow:
+    0 0 55px
+    rgba(0, 204, 255, 0.16);
+}
+
+
+.qr-code-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+
+/* QR CORNERS */
+
+.qr-corner {
+  position: absolute;
+
+  width: 32px;
+  height: 32px;
+}
+
+
+.qr-corner-one {
+  top: -8px;
+  left: -8px;
+
+  border-top: 3px solid #ff32ca;
+  border-left: 3px solid #ff32ca;
+}
+
+
+.qr-corner-two {
+  top: -8px;
+  right: -8px;
+
+  border-top: 3px solid #00caff;
+  border-right: 3px solid #00caff;
+}
+
+
+.qr-corner-three {
+  bottom: -8px;
+  left: -8px;
+
+  border-bottom: 3px solid #a744ff;
+  border-left: 3px solid #a744ff;
+}
+
+
+.qr-corner-four {
+  bottom: -8px;
+  right: -8px;
+
+  border-bottom: 3px solid #76ea34;
+  border-right: 3px solid #76ea34;
+}
+
+
+.qr-scan-text {
+  color: #707078;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+
+/* =========================================
+   FLOATING CARDS
+========================================= */
+
+.qr-floating-card {
+  position: absolute;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px 15px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(16, 16, 18, 0.94);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.4);
+}
+
+
+.qr-floating-card > span {
+  font-size: 22px;
+}
+
+
+.qr-floating-card div {
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+.qr-floating-card strong {
+  color: #ffffff;
+
+  font-size: 11px;
+}
+
+
+.qr-floating-card small {
+  color: #777780;
+
+  font-size: 9px;
+}
+
+
+.qr-floating-one {
+  top: 70px;
+  left: -15px;
+}
+
+
+.qr-floating-two {
+  right: -20px;
+  bottom: 70px;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1050px) {
+
+  .qr-download-section {
+    padding: 90px 24px;
+  }
+
+
+  .qr-download-container {
+    grid-template-columns: 1fr;
+
+    gap: 70px;
+
+    text-align: center;
+  }
+
+
+  .qr-download-content {
+    max-width: 850px;
+
+    margin: 0 auto;
+  }
+
+
+  .qr-download-badge,
+  .qr-playstore-button {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .qr-download-points {
+    justify-content: center;
+  }
+
+
+  .qr-download-content > p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .qr-download-right {
+    max-width: 520px;
+
+    margin: 0 auto;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .qr-download-section {
+    padding:
+      70px 15px;
+  }
+
+
+  .qr-download-container {
+    gap: 55px;
+  }
+
+
+  .qr-download-content h2 {
+    font-size:
+      clamp(38px, 12vw, 54px);
+
+    letter-spacing: -2px;
+  }
+
+
+  .qr-download-content > p {
+    font-size: 14px;
+
+    line-height: 1.75;
+  }
+
+
+  .qr-download-points {
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 10px;
+  }
+
+
+  .qr-main-card {
+    padding:
+      30px 20px;
+
+    border-radius: 24px;
+  }
+
+
+  .qr-main-card h3 {
+    font-size: 23px;
+  }
+
+
+  .qr-code-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+
+
+  .qr-floating-card {
+    display: none;
+  }
+
+
+  .qr-playstore-button {
+    min-width: 215px;
+  }
+
+}

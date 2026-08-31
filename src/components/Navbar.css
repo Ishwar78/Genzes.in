@@ -1,0 +1,67 @@
+.genzes-nav-wrap {
+  width: 100%;
+  padding: 14px 18px 0;
+  position: relative;
+  z-index: 20;
+}
+
+.genzes-nav {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.genzes-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.genzes-nav__brand img {
+  width: clamp(210px, 19vw, 300px);
+  height: auto;
+}
+
+.genzes-nav__download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-size: clamp(0.9rem, 1.1vw, 1.02rem);
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: linear-gradient(100deg, #d91cd9 0%, #ff4975 42%, #ffa300 100%);
+  box-shadow: 0 10px 35px rgba(255, 43, 155, 0.22);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.genzes-nav__download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 44px rgba(255, 43, 155, 0.35);
+}
+
+@media (max-width: 640px) {
+  .genzes-nav-wrap {
+    padding: 10px 12px 0;
+  }
+
+  .genzes-nav {
+    gap: 10px;
+  }
+
+  .genzes-nav__brand img {
+    width: 172px;
+  }
+
+  .genzes-nav__download {
+    padding: 11px 13px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+  }
+}

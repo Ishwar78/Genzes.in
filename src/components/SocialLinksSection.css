@@ -1,0 +1,828 @@
+.social-links-section {
+  width: 100%;
+  padding: 56px 18px 26px;
+  position: relative;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.social-links-section__inner {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: 34px 24px 30px;
+
+  border-radius: 30px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.09);
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(219, 0, 255, 0.12),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(0, 194, 255, 0.11),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at bottom center,
+      rgba(117, 255, 41, 0.08),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(10, 10, 14, 0.96),
+      rgba(5, 5, 8, 0.98)
+    );
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 24px 70px rgba(0, 0, 0, 0.35);
+
+  overflow: hidden;
+}
+
+
+/* =========================================
+   SECTION HEADER
+========================================= */
+
+.social-links-section__header {
+  width: 100%;
+  max-width: 100%;
+
+  text-align: center;
+
+  margin: 0 auto 34px;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.social-links-section__header h2 {
+  margin: 0;
+
+  width: 100%;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(
+      2.2rem,
+      4.2vw,
+      4.25rem
+    );
+
+  line-height: 1.05;
+
+  font-weight: 900;
+
+  letter-spacing: -0.04em;
+
+  /* IMPORTANT */
+  white-space: nowrap;
+}
+
+
+/* =========================================
+   HEADING GRADIENT
+========================================= */
+
+.social-links-section__header h2 span {
+  display: inline;
+
+  white-space: nowrap;
+
+  background:
+    linear-gradient(
+      95deg,
+      #e63bff 0%,
+      #5c6cff 25%,
+      #20d7ff 52%,
+      #57e24e 77%,
+      #ffd33d 100%
+    );
+
+  -webkit-background-clip: text;
+
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+
+  color: transparent;
+}
+
+
+/* =========================================
+   OPTIONAL BADGE
+========================================= */
+
+.social-links-section__badge {
+  width: fit-content;
+
+  margin:
+    0
+    auto
+    18px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 42px;
+
+  padding:
+    0
+    18px;
+
+  border-radius: 999px;
+
+  border:
+    1px solid
+    rgba(117, 255, 41, 0.28);
+
+  background:
+    rgba(117, 255, 41, 0.08);
+
+  color: #8cff3d;
+
+  font-size: 0.84rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+}
+
+
+/* =========================================
+   OPTIONAL DESCRIPTION
+========================================= */
+
+.social-links-section__header p {
+  margin:
+    16px
+    auto
+    0;
+
+  max-width: 720px;
+
+  color:
+    rgba(255, 255, 255, 0.78);
+
+  font-size:
+    clamp(
+      1rem,
+      1.25vw,
+      1.14rem
+    );
+
+  line-height: 1.75;
+
+  font-weight: 500;
+}
+
+
+/* =========================================
+   SOCIAL CARDS GRID
+========================================= */
+
+.social-links-section__grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 18px;
+}
+
+
+/* =========================================
+   SOCIAL CARD
+========================================= */
+
+.social-links__card {
+  position: relative;
+
+  min-height: 245px;
+
+  padding:
+    24px
+    22px
+    20px;
+
+  border-radius: 24px;
+
+  text-decoration: none;
+
+  overflow: hidden;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(17, 17, 22, 0.96),
+      rgba(8, 8, 12, 0.98)
+    );
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+
+  box-shadow:
+    0 12px 38px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+
+/* =========================================
+   CARD HOVER
+========================================= */
+
+.social-links__card:hover {
+  transform:
+    translateY(-6px);
+}
+
+
+/* =========================================
+   CARD GLOW
+========================================= */
+
+.social-links__card-glow {
+  position: absolute;
+
+  width: 180px;
+
+  height: 180px;
+
+  right: -40px;
+
+  top: -45px;
+
+  border-radius: 50%;
+
+  filter:
+    blur(55px);
+
+  opacity: 0.18;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.social-links__icon {
+  position: relative;
+
+  z-index: 2;
+
+  width: 72px;
+
+  height: 72px;
+
+  border-radius: 22px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 2rem;
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  backdrop-filter:
+    blur(10px);
+}
+
+
+/* =========================================
+   CARD CONTENT
+========================================= */
+
+.social-links__content {
+  position: relative;
+
+  z-index: 2;
+
+  margin-top: 24px;
+}
+
+
+.social-links__content h3 {
+  margin: 0;
+
+  font-size:
+    clamp(
+      1.38rem,
+      1.7vw,
+      1.7rem
+    );
+
+  line-height: 1.15;
+
+  font-weight: 800;
+
+  color: #ffffff;
+}
+
+
+.social-links__content p {
+  margin:
+    12px
+    0
+    0;
+
+  color:
+    rgba(255, 255, 255, 0.76);
+
+  font-size: 1rem;
+
+  line-height: 1.7;
+
+  font-weight: 500;
+}
+
+
+/* =========================================
+   FOLLOW NOW BUTTON
+========================================= */
+
+.social-links__cta {
+  position: relative;
+
+  z-index: 2;
+
+  margin-top: 22px;
+
+  width: fit-content;
+
+  min-height: 42px;
+
+  padding:
+    0
+    16px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 0.92rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.01em;
+
+  color: #ffffff;
+
+  background:
+    rgba(255, 255, 255, 0.06);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+
+.social-links__card:hover .social-links__cta {
+  background:
+    rgba(255, 255, 255, 0.1);
+
+  border-color:
+    rgba(255, 255, 255, 0.16);
+}
+
+
+/* =========================================
+   INSTAGRAM
+========================================= */
+
+.social-links__card--instagram {
+  border-color:
+    rgba(255, 0, 128, 0.28);
+}
+
+
+.social-links__card--instagram .social-links__icon {
+  color: #ff49b5;
+
+  box-shadow:
+    0 0 30px
+    rgba(255, 73, 181, 0.15);
+}
+
+
+.social-links__card--instagram .social-links__card-glow {
+  background: #ff2aa7;
+}
+
+
+.social-links__card--instagram:hover {
+  border-color:
+    rgba(255, 73, 181, 0.52);
+
+  box-shadow:
+    0 16px 45px
+    rgba(255, 73, 181, 0.12);
+}
+
+
+/* =========================================
+   FACEBOOK
+========================================= */
+
+.social-links__card--facebook {
+  border-color:
+    rgba(48, 128, 255, 0.28);
+}
+
+
+.social-links__card--facebook .social-links__icon {
+  color: #39a2ff;
+
+  box-shadow:
+    0 0 30px
+    rgba(57, 162, 255, 0.16);
+}
+
+
+.social-links__card--facebook .social-links__card-glow {
+  background: #1b8fff;
+}
+
+
+.social-links__card--facebook:hover {
+  border-color:
+    rgba(57, 162, 255, 0.5);
+
+  box-shadow:
+    0 16px 45px
+    rgba(57, 162, 255, 0.12);
+}
+
+
+/* =========================================
+   TWITTER / X
+========================================= */
+
+.social-links__card--twitter {
+  border-color:
+    rgba(0, 239, 255, 0.24);
+}
+
+
+.social-links__card--twitter .social-links__icon {
+  color: #2fe9ff;
+
+  box-shadow:
+    0 0 30px
+    rgba(47, 233, 255, 0.15);
+}
+
+
+.social-links__card--twitter .social-links__card-glow {
+  background: #00d5ff;
+}
+
+
+.social-links__card--twitter:hover {
+  border-color:
+    rgba(47, 233, 255, 0.5);
+
+  box-shadow:
+    0 16px 45px
+    rgba(47, 233, 255, 0.12);
+}
+
+
+/* =========================================
+   LINKEDIN
+========================================= */
+
+.social-links__card--linkedin {
+  border-color:
+    rgba(126, 255, 50, 0.26);
+}
+
+
+.social-links__card--linkedin .social-links__icon {
+  color: #82ff3e;
+
+  box-shadow:
+    0 0 30px
+    rgba(130, 255, 62, 0.15);
+}
+
+
+.social-links__card--linkedin .social-links__card-glow {
+  background: #77ff1e;
+}
+
+
+.social-links__card--linkedin:hover {
+  border-color:
+    rgba(130, 255, 62, 0.52);
+
+  box-shadow:
+    0 16px 45px
+    rgba(130, 255, 62, 0.11);
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+
+  .social-links-section__grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .social-links-section__header h2 {
+    font-size:
+      clamp(
+        2rem,
+        5vw,
+        3.4rem
+      );
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+  .social-links-section {
+    padding:
+      44px
+      12px
+      18px;
+  }
+
+
+  .social-links-section__inner {
+    padding:
+      26px
+      16px
+      20px;
+
+    border-radius: 24px;
+  }
+
+
+  .social-links-section__header {
+    width: 100%;
+
+    max-width: 100%;
+
+    margin-bottom: 24px;
+  }
+
+
+  /* SINGLE LINE ON MOBILE */
+
+  .social-links-section__header h2 {
+    width: 100%;
+
+    font-size:
+      clamp(
+        1.55rem,
+        7.3vw,
+        2.5rem
+      );
+
+    line-height: 1.1;
+
+    letter-spacing: -0.045em;
+
+    white-space: nowrap;
+  }
+
+
+  .social-links-section__header h2 span {
+    white-space: nowrap;
+  }
+
+
+  .social-links-section__header p {
+    line-height: 1.65;
+  }
+
+
+  .social-links-section__grid {
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+
+  .social-links__card {
+    min-height: 220px;
+
+    padding:
+      20px
+      18px
+      18px;
+
+    border-radius: 20px;
+  }
+
+
+  .social-links__icon {
+    width: 64px;
+
+    height: 64px;
+
+    border-radius: 18px;
+
+    font-size: 1.8rem;
+  }
+
+
+  .social-links__content {
+    margin-top: 20px;
+  }
+
+
+  .social-links__content h3 {
+    font-size: 1.32rem;
+  }
+
+
+  .social-links__content p {
+    font-size: 0.97rem;
+  }
+
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+  .social-links-section {
+    padding:
+      34px
+      10px
+      16px;
+  }
+
+
+  .social-links-section__inner {
+    padding:
+      22px
+      12px
+      18px;
+
+    border-radius: 20px;
+  }
+
+
+  .social-links-section__header {
+    margin-bottom: 20px;
+  }
+
+
+  .social-links-section__header h2 {
+    font-size:
+      clamp(
+        1.3rem,
+        6.7vw,
+        1.8rem
+      );
+
+    line-height: 1.1;
+
+    letter-spacing: -0.05em;
+
+    white-space: nowrap;
+  }
+
+
+  .social-links__card {
+    min-height: 205px;
+
+    padding:
+      18px
+      16px;
+  }
+
+
+  .social-links__icon {
+    width: 58px;
+
+    height: 58px;
+
+    border-radius: 17px;
+
+    font-size: 1.6rem;
+  }
+
+
+  .social-links__content {
+    margin-top: 17px;
+  }
+
+
+  .social-links__content p {
+    line-height: 1.55;
+  }
+
+
+  .social-links__cta {
+    min-height: 38px;
+
+    padding:
+      0
+      14px;
+
+    font-size: 0.86rem;
+  }
+
+}
+
+
+/* =========================================
+   VERY SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+
+  .social-links-section__inner {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+
+  .social-links-section__header h2 {
+    font-size:
+      clamp(
+        1.18rem,
+        6.35vw,
+        1.45rem
+      );
+
+    letter-spacing: -0.055em;
+  }
+
+
+  .social-links__grid {
+    gap: 12px;
+  }
+
+}
