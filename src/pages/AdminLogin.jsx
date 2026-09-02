@@ -159,7 +159,7 @@ export default function AdminLogin() {
           </div>
 
           {/* QUICK FILL / HINT HELPER */}
-          <div className="login-hint-row">
+          {/* <div className="login-hint-row">
             <span>Default Admin:</span>
             <button
               type="button"
@@ -168,7 +168,7 @@ export default function AdminLogin() {
             >
               Fill Credentials
             </button>
-          </div>
+          </div> */}
 
           {/* SUBMIT BUTTON */}
           <button

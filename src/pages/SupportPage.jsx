@@ -14,6 +14,8 @@ import {
   FiHeadphones,
   FiShield,
   FiClock,
+  FiCopy,
+  FiCheck,
 } from "react-icons/fi";
 import { submitSupportTicket } from "../lib/api";
 import "./SupportPage.css";
@@ -31,6 +33,8 @@ export default function SupportPage() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [createdTicketId, setCreatedTicketId] = useState("");
+  const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const fileInputRef = useRef(null);
@@ -69,10 +73,19 @@ export default function SupportPage() {
     }
   };
 
+  const handleCopyTicket = () => {
+    if (createdTicketId) {
+      navigator.clipboard.writeText(createdTicketId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
     setSuccessMsg("");
+    setCreatedTicketId("");
 
     if (!formData.name.trim()) {
       setErrorMsg("Please enter your full name");
@@ -84,8 +97,18 @@ export default function SupportPage() {
       return;
     }
 
+    if (!formData.username.trim()) {
+      setErrorMsg("Please enter your GenZes username");
+      return;
+    }
+
     if (!formData.message.trim()) {
       setErrorMsg("Please enter your message or query");
+      return;
+    }
+
+    if (!selectedFile) {
+      setErrorMsg("Please attach a screenshot or image (Mandatory)");
       return;
     }
 
@@ -103,6 +126,8 @@ export default function SupportPage() {
       }
 
       const res = await submitSupportTicket(dataToSend);
+      const ticketNum = res.ticketId || res.support?.ticketId || "";
+      setCreatedTicketId(ticketNum);
       setSuccessMsg(
         res.message ||
           "Your support request has been submitted successfully! We will get back to you shortly."
@@ -209,13 +234,51 @@ export default function SupportPage() {
               Fill in your details below and attach screenshots if applicable.
             </p>
 
-            {/* SUCCESS BANNER */}
-            {successMsg && (
+            {/* SUCCESS BANNER WITH TICKET NUMBER */}
+            {createdTicketId ? (
+              <div className="support-ticket-success-box">
+                <div className="ticket-success-header">
+                  <FiCheckCircle className="ticket-success-icon" />
+                  <div>
+                    <h3>Support Ticket Generated!</h3>
+                    <p>{successMsg || "Your support inquiry has been submitted successfully."}</p>
+                  </div>
+                </div>
+
+                <div className="ticket-id-display-card">
+                  <span className="ticket-id-label">YOUR TICKET NUMBER</span>
+                  <div className="ticket-id-value-row">
+                    <span className="ticket-id-number">{createdTicketId}</span>
+                    <button
+                      type="button"
+                      onClick={handleCopyTicket}
+                      className={`ticket-copy-btn ${copied ? "copied" : ""}`}
+                      title="Copy Ticket ID"
+                    >
+                      {copied ? (
+                        <>
+                          <FiCheck />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiCopy />
+                          <span>Copy ID</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <small className="ticket-id-tip">
+                    ✨ Save this ticket number for tracking. Our team will contact your email shortly.
+                  </small>
+                </div>
+              </div>
+            ) : successMsg ? (
               <div className="support-alert support-alert--success">
                 <FiCheckCircle />
                 <span>{successMsg}</span>
               </div>
-            )}
+            ) : null}
 
             {/* ERROR BANNER */}
             {errorMsg && (
@@ -268,65 +331,66 @@ export default function SupportPage() {
 
               {/* USERNAME & MOBILE ROW */}
               <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="username">
-                    GenZes Username <span className="optional">(Optional)</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <FiAtSign className="input-icon" />
-                    <input
-                      type="text"
-                      id="username"
-                      name="username"
-                      placeholder="e.g. rahul_official"
-                      value={formData.username}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
+                 <div className="form-group">
+                   <label htmlFor="username">
+                     GenZes Username <span className="req">*</span>
+                   </label>
+                   <div className="input-wrapper">
+                     <FiAtSign className="input-icon" />
+                     <input
+                       type="text"
+                       id="username"
+                       name="username"
+                       placeholder="e.g. rahul_official"
+                       value={formData.username}
+                       onChange={handleInputChange}
+                       required
+                     />
+                   </div>
+                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="mobile">
-                    Mobile Number <span className="optional">(Optional)</span>
-                  </label>
-                  <div className="input-wrapper">
-                    <FiPhone className="input-icon" />
-                    <input
-                      type="tel"
-                      id="mobile"
-                      name="mobile"
-                      placeholder="e.g. +91 98765 43210"
-                      value={formData.mobile}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-              </div>
+                 <div className="form-group">
+                   <label htmlFor="mobile">
+                     Mobile Number <span className="optional">(Optional)</span>
+                   </label>
+                   <div className="input-wrapper">
+                     <FiPhone className="input-icon" />
+                     <input
+                       type="tel"
+                       id="mobile"
+                       name="mobile"
+                       placeholder="e.g. +91 98765 43210"
+                       value={formData.mobile}
+                       onChange={handleInputChange}
+                     />
+                   </div>
+                 </div>
+               </div>
 
-              {/* MESSAGE */}
-              <div className="form-group">
-                <label htmlFor="message">
-                  Your Message / Query <span className="req">*</span>
-                </label>
-                <div className="input-wrapper input-wrapper--textarea">
-                  <FiMessageSquare className="input-icon textarea-icon" />
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={4}
-                    placeholder="Describe your issue, feedback, or question in detail..."
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
+               {/* MESSAGE */}
+               <div className="form-group">
+                 <label htmlFor="message">
+                   Your Message / Query <span className="req">*</span>
+                 </label>
+                 <div className="input-wrapper input-wrapper--textarea">
+                   <FiMessageSquare className="input-icon textarea-icon" />
+                   <textarea
+                     id="message"
+                     name="message"
+                     rows={4}
+                     placeholder="Describe your issue, feedback, or question in detail..."
+                     value={formData.message}
+                     onChange={handleInputChange}
+                     required
+                   />
+                 </div>
+               </div>
 
-              {/* IMAGE / FILE ATTACHMENT */}
-              <div className="form-group">
-                <label>
-                  Attach Screenshot / Image <span className="optional">(Optional)</span>
-                </label>
+               {/* IMAGE / FILE ATTACHMENT */}
+               <div className="form-group">
+                 <label>
+                   Attach Screenshot / Image <span className="req">*</span>
+                 </label>
 
                 {!previewUrl ? (
                   <div

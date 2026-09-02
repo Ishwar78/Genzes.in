@@ -6,6 +6,7 @@ const fs = require("fs");
 const Admin = require("../module/Admin");
 const Support = require("../module/Support");
 const { protectAdmin } = require("../middleware/authMiddleware");
+const { sendStatusUpdateEmail } = require("../utils/emailService");
 
 // Generate JWT Helper
 const generateToken = (id) => {
@@ -111,11 +112,15 @@ router.get("/stats", protectAdmin, async (req, res) => {
 });
 
 // @route   GET /api/admin/supports
-// @desc    Get all support messages
+// @desc    Get all support messages with pagination
 // @access  Private (Admin)
 router.get("/supports", protectAdmin, async (req, res) => {
   try {
-    const { status, search } = req.query;
+    const { status, search, page = 1, limit = 20 } = req.query;
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, parseInt(limit, 10) || 20);
+    const skip = (pageNum - 1) * limitNum;
+
     let query = {};
 
     if (status && status !== "all") {
@@ -125,6 +130,7 @@ router.get("/supports", protectAdmin, async (req, res) => {
     if (search) {
       const searchRegex = new RegExp(search, "i");
       query.$or = [
+        { ticketId: searchRegex },
         { name: searchRegex },
         { email: searchRegex },
         { username: searchRegex },
@@ -133,11 +139,30 @@ router.get("/supports", protectAdmin, async (req, res) => {
       ];
     }
 
-    const supports = await Support.find(query).sort({ createdAt: -1 });
+    const totalCount = await Support.countDocuments(query);
+    const supports = await Support.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    // Ensure any older documents without ticketId have one
+    for (let item of supports) {
+      if (!item.ticketId) {
+        const randomDigits = Math.floor(100000 + Math.random() * 900000);
+        item.ticketId = `GZ-${randomDigits}`;
+        await item.save();
+      }
+    }
+
+    const totalPages = Math.ceil(totalCount / limitNum) || 1;
 
     res.json({
       success: true,
       count: supports.length,
+      totalCount,
+      totalPages,
+      currentPage: pageNum,
+      limit: limitNum,
       supports,
     });
   } catch (error) {
@@ -151,11 +176,11 @@ router.get("/supports", protectAdmin, async (req, res) => {
 });
 
 // @route   PATCH /api/admin/supports/:id/status
-// @desc    Update support message status
+// @desc    Update support message status & notify user by email
 // @access  Private (Admin)
 router.patch("/supports/:id/status", protectAdmin, async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, note } = req.body;
 
     if (!["new", "in_progress", "resolved"].includes(status)) {
       return res.status(400).json({
@@ -177,10 +202,21 @@ router.patch("/supports/:id/status", protectAdmin, async (req, res) => {
       });
     }
 
+    // Automatically send status update email to user
+    let emailSent = false;
+    try {
+      emailSent = await sendStatusUpdateEmail(support, status, note || "");
+    } catch (mailErr) {
+      console.error("Failed to send status update email:", mailErr);
+    }
+
     res.json({
       success: true,
-      message: "Status updated successfully",
+      message: `Ticket status updated to "${status}".${
+        emailSent ? ` Notification email sent to ${support.email}!` : ""
+      }`,
       support,
+      emailSent,
     });
   } catch (error) {
     console.error("Update status error:", error);

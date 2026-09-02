@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const supportSchema = new mongoose.Schema(
   {
+    ticketId: {
+      type: String,
+      unique: true,
+      index: true,
+      trim: true,
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -15,7 +21,7 @@ const supportSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      default: "",
+      required: [true, "Username is required"],
       trim: true,
     },
     mobile: {
@@ -30,7 +36,7 @@ const supportSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: null,
+      required: [true, "Screenshot / Image is required"],
     },
     status: {
       type: String,

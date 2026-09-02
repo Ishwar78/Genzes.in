@@ -32,6 +32,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // API Routes
 app.use("/api/admin", require("./route/adminRoutes"));
 app.use("/api/support", require("./route/supportRoutes"));
+app.use("/api/videos", require("./route/videoRoutes"));
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -64,7 +65,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5005;
+const PORT = process.env.PORT || 5055;
 
 app.listen(PORT, () => {
   console.log(`🚀 GenZes Backend Server running on port ${PORT}`);

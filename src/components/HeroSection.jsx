@@ -12,8 +12,9 @@ import {
 import { FaXTwitter } from 'react-icons/fa6';
 import { SiGoogleplay } from 'react-icons/si';
 
-import userProof from '../assets/user-photo.png';
+import userProof from '../assets/user.png';
 import { APP_LINKS } from '../lib/appLinks.js';
+import { getActiveVideos, getImageUrl } from '../lib/api.js';
 
 import './HeroSection.css';
 
@@ -70,10 +71,10 @@ const socialMedia = [
 
 
 /* =========================================
-   HERO VIDEOS
+   DEFAULT HERO VIDEOS
 ========================================= */
 
-const HERO_VIDEOS = [
+const DEFAULT_HERO_VIDEOS = [
   '/video1.mp4',
   '/video2.mp4',
   '/video3.mp4',
@@ -82,13 +83,32 @@ const HERO_VIDEOS = [
 
 export default function HeroSection() {
 
-  /* =========================================
-     RANDOM VIDEO ON REFRESH
-  ========================================= */
-
+  const [videoList, setVideoList] = useState(DEFAULT_HERO_VIDEOS);
   const [currentVideo, setCurrentVideo] = useState(() => {
-    return Math.floor(Math.random() * HERO_VIDEOS.length);
+    return Math.floor(Math.random() * DEFAULT_HERO_VIDEOS.length);
   });
+
+  // Fetch admin uploaded active videos
+  useEffect(() => {
+    let isMounted = true;
+    const fetchActiveVideos = async () => {
+      try {
+        const res = await getActiveVideos();
+        if (res.success && Array.isArray(res.videos) && res.videos.length > 0 && isMounted) {
+          const formatted = res.videos.map((v) => getImageUrl(v));
+          setVideoList(formatted);
+          setCurrentVideo(0);
+        }
+      } catch (e) {
+        console.log("Using default hero videos:", e.message);
+      }
+    };
+
+    fetchActiveVideos();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
 
   /* =========================================
@@ -96,21 +116,10 @@ export default function HeroSection() {
   ========================================= */
 
   const nextVideo = () => {
-    setCurrentVideo((prev) => {
-      return (prev + 1) % HERO_VIDEOS.length;
-    });
+    if (videoList.length > 0) {
+      setCurrentVideo((prev) => (prev + 1) % videoList.length);
+    }
   };
-
-
-  /* =========================================
-     VIDEO ENDS
-     Video jitni duration ki hogi,
-     utni hi chalegi.
-========================================= */
-
-  useEffect(() => {
-    return undefined;
-  }, [currentVideo]);
 
 
   /* =========================================
@@ -328,9 +337,9 @@ export default function HeroSection() {
           <div className="hero-section__video-wrapper">
 
             <video
-              key={HERO_VIDEOS[currentVideo]}
+              key={videoList[currentVideo] || 'default-hero-video'}
               className="hero-section__video"
-              src={HERO_VIDEOS[currentVideo]}
+              src={videoList[currentVideo] || DEFAULT_HERO_VIDEOS[0]}
               autoPlay
               controls
               playsInline
@@ -345,36 +354,34 @@ export default function HeroSection() {
               VIDEO DOTS
           ===================================== */}
 
-          <div
-            className="hero-section__video-dots"
-            aria-label="Video slider controls"
-          >
-
-            {HERO_VIDEOS.map((_, index) => (
-
-              <button
-                key={index}
-                type="button"
-                className={`
-                  hero-section__video-dot
-                  ${
+          {videoList.length > 1 && (
+            <div
+              className="hero-section__video-dots"
+              aria-label="Video slider controls"
+            >
+              {videoList.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={`
+                    hero-section__video-dot
+                    ${
+                      index === currentVideo
+                        ? 'hero-section__video-dot--active'
+                        : ''
+                    }
+                  `}
+                  onClick={() => setCurrentVideo(index)}
+                  aria-label={`Show video ${index + 1}`}
+                  aria-current={
                     index === currentVideo
-                      ? 'hero-section__video-dot--active'
-                      : ''
+                      ? 'true'
+                      : undefined
                   }
-                `}
-                onClick={() => setCurrentVideo(index)}
-                aria-label={`Show video ${index + 1}`}
-                aria-current={
-                  index === currentVideo
-                    ? 'true'
-                    : undefined
-                }
-              />
-
-            ))}
-
-          </div>
+                />
+              ))}
+            </div>
+          )}
 
         </div>
 

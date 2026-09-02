@@ -23,6 +23,16 @@ import {
   FiMessageSquare,
   FiShield,
   FiLayers,
+  FiHash,
+  FiCopy,
+  FiCheck,
+  FiVideo,
+  FiUploadCloud,
+  FiPlay,
+  FiCheckSquare,
+  FiSquare,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
 import {
   getAdminStats,
@@ -30,6 +40,10 @@ import {
   updateTicketStatus,
   deleteTicket,
   getImageUrl,
+  getAllVideos,
+  uploadHeroVideo,
+  toggleVideoStatus,
+  deleteHeroVideo,
 } from "../lib/api";
 import "./AdminDashboard.css";
 
@@ -54,12 +68,35 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Modal / Preview state
   const [previewImage, setPreviewImage] = useState(null);
   const [expandedMessage, setExpandedMessage] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [actionSuccess, setActionSuccess] = useState("");
+  const [copiedTicketId, setCopiedTicketId] = useState("");
+
+  // Video Management State
+  const [videos, setVideos] = useState([]);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoTitle, setVideoTitle] = useState("");
+  const [selectedVideoFile, setSelectedVideoFile] = useState(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoActionId, setVideoActionId] = useState(null);
+
+  const copyTicketId = (tId) => {
+    if (!tId) return;
+    navigator.clipboard.writeText(tId);
+    setCopiedTicketId(tId);
+    showNotification(`Ticket ID ${tId} copied to clipboard!`);
+    setTimeout(() => {
+      setCopiedTicketId("");
+    }, 2500);
+  };
 
   // Check auth
   useEffect(() => {
@@ -90,6 +127,8 @@ export default function AdminDashboard() {
         getSupportTickets(token, {
           status: statusFilter,
           search: searchTerm,
+          page: currentPage,
+          limit: 20,
         }),
       ]);
 
@@ -98,6 +137,8 @@ export default function AdminDashboard() {
       }
       if (ticketsRes.success) {
         setTickets(ticketsRes.supports || []);
+        setTotalPages(ticketsRes.totalPages || 1);
+        setTotalCount(ticketsRes.totalCount ?? (ticketsRes.supports?.length || 0));
       }
     } catch (err) {
       console.error("Fetch data error:", err);
@@ -107,13 +148,117 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [token, statusFilter, searchTerm]);
+  }, [token, statusFilter, searchTerm, currentPage]);
+
+  // Fetch hero videos
+  const fetchVideos = useCallback(async () => {
+    if (!token) return;
+    try {
+      setVideoLoading(true);
+      const res = await getAllVideos(token);
+      if (res.success) {
+        setVideos(res.videos || []);
+      }
+    } catch (err) {
+      console.error("Fetch videos error:", err);
+    } finally {
+      setVideoLoading(false);
+    }
+  }, [token]);
 
   useEffect(() => {
     if (token) {
       fetchData();
+      fetchVideos();
     }
-  }, [token, fetchData]);
+  }, [token, fetchData, fetchVideos]);
+
+  const handleVideoFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (
+        !file.type.startsWith("video/") &&
+        !/\.(mp4|webm|mov|mkv|avi|m4v)$/i.test(file.name)
+      ) {
+        alert("Please select a valid video file (MP4, WebM, MOV, MKV)");
+        return;
+      }
+      if (file.size > 100 * 1024 * 1024) {
+        alert("Video file size must be under 100 MB");
+        return;
+      }
+      setSelectedVideoFile(file);
+      if (!videoTitle) {
+        setVideoTitle(file.name.replace(/\.[^/.]+$/, ""));
+      }
+      const preview = URL.createObjectURL(file);
+      setVideoPreviewUrl(preview);
+    }
+  };
+
+  const removeSelectedVideo = () => {
+    setSelectedVideoFile(null);
+    if (videoPreviewUrl) {
+      URL.revokeObjectURL(videoPreviewUrl);
+      setVideoPreviewUrl(null);
+    }
+    setVideoTitle("");
+  };
+
+  const handleUploadVideo = async (e) => {
+    e.preventDefault();
+    if (!selectedVideoFile) {
+      alert("Please select a video file to upload");
+      return;
+    }
+
+    try {
+      setUploadingVideo(true);
+      const formData = new FormData();
+      formData.append("video", selectedVideoFile);
+      formData.append("title", videoTitle.trim() || selectedVideoFile.name);
+
+      const res = await uploadHeroVideo(token, formData);
+      if (res.success) {
+        showNotification("Hero video uploaded & activated successfully!");
+        removeSelectedVideo();
+        fetchVideos();
+      }
+    } catch (err) {
+      alert(err.message || "Failed to upload video");
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleToggleVideo = async (videoId) => {
+    try {
+      setVideoActionId(videoId);
+      await toggleVideoStatus(token, videoId);
+      showNotification("Video status updated!");
+      fetchVideos();
+    } catch (err) {
+      alert(err.message || "Failed to toggle video status");
+    } finally {
+      setVideoActionId(null);
+    }
+  };
+
+  const handleDeleteVideo = async (videoId) => {
+    if (!window.confirm("Are you sure you want to delete this hero video?")) {
+      return;
+    }
+    try {
+      setVideoActionId(videoId);
+      await deleteHeroVideo(token, videoId);
+      showNotification("Hero video deleted successfully.");
+      fetchVideos();
+    } catch (err) {
+      alert(err.message || "Failed to delete video");
+    } finally {
+      setVideoActionId(null);
+    }
+  };
 
   // Handle status update
   const handleStatusChange = async (ticketId, newStatus) => {
@@ -211,6 +356,23 @@ export default function AdminDashboard() {
             )}
           </button>
 
+          <button
+            type="button"
+            className={`nav-item ${activeTab === "video" ? "active" : ""}`}
+            onClick={() => {
+              setActiveTab("video");
+              fetchVideos();
+            }}
+          >
+            <FiVideo className="nav-icon" />
+            <span>Hero Videos</span>
+            {videos.filter((v) => v.isActive).length > 0 && (
+              <span className="nav-badge nav-badge--blue">
+                {videos.filter((v) => v.isActive).length}
+              </span>
+            )}
+          </button>
+
           <Link to="/" className="nav-item nav-item--link" target="_blank">
             <FiExternalLink className="nav-icon" />
             <span>Visit Website</span>
@@ -253,23 +415,30 @@ export default function AdminDashboard() {
             <h1>
               {activeTab === "overview"
                 ? "Platform Overview"
+                : activeTab === "video"
+                ? "Hero Section Video Manager"
                 : "Support & Helpdesk Management"}
             </h1>
             <p>
               {activeTab === "overview"
                 ? "Real-time insights and support metrics for GenZes."
+                : activeTab === "video"
+                ? "Upload and manage custom videos displayed inside the smartphone mockup on the homepage hero section."
                 : "Review and respond to incoming user support inquiries and attachments."}
             </p>
           </div>
 
           <button
             type="button"
-            onClick={fetchData}
+            onClick={() => {
+              if (activeTab === "video") fetchVideos();
+              else fetchData();
+            }}
             className="admin-refresh-btn"
             title="Refresh Data"
-            disabled={loading}
+            disabled={loading || videoLoading}
           >
-            <FiRefreshCw className={loading ? "spin-icon" : ""} />
+            <FiRefreshCw className={loading || videoLoading ? "spin-icon" : ""} />
             <span>Refresh</span>
           </button>
         </header>
@@ -439,14 +608,20 @@ export default function AdminDashboard() {
                 <FiSearch className="search-icon" />
                 <input
                   type="text"
-                  placeholder="Search by name, email, @username, phone or message..."
+                  placeholder="Search by Ticket ID (GZ-...), name, email, @username, phone..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
                 />
                 {searchTerm && (
                   <button
                     type="button"
-                    onClick={() => setSearchTerm("")}
+                    onClick={() => {
+                      setSearchTerm("");
+                      setCurrentPage(1);
+                    }}
                     className="search-clear-btn"
                   >
                     <FiX />
@@ -461,7 +636,10 @@ export default function AdminDashboard() {
                   className={`filter-chip ${
                     statusFilter === "all" ? "active" : ""
                   }`}
-                  onClick={() => setStatusFilter("all")}
+                  onClick={() => {
+                    setStatusFilter("all");
+                    setCurrentPage(1);
+                  }}
                 >
                   All ({stats.total})
                 </button>
@@ -470,7 +648,10 @@ export default function AdminDashboard() {
                   className={`filter-chip filter-chip--new ${
                     statusFilter === "new" ? "active" : ""
                   }`}
-                  onClick={() => setStatusFilter("new")}
+                  onClick={() => {
+                    setStatusFilter("new");
+                    setCurrentPage(1);
+                  }}
                 >
                   New ({stats.newTickets})
                 </button>
@@ -479,7 +660,10 @@ export default function AdminDashboard() {
                   className={`filter-chip filter-chip--progress ${
                     statusFilter === "in_progress" ? "active" : ""
                   }`}
-                  onClick={() => setStatusFilter("in_progress")}
+                  onClick={() => {
+                    setStatusFilter("in_progress");
+                    setCurrentPage(1);
+                  }}
                 >
                   In Progress ({stats.inProgress})
                 </button>
@@ -488,7 +672,10 @@ export default function AdminDashboard() {
                   className={`filter-chip filter-chip--resolved ${
                     statusFilter === "resolved" ? "active" : ""
                   }`}
-                  onClick={() => setStatusFilter("resolved")}
+                  onClick={() => {
+                    setStatusFilter("resolved");
+                    setCurrentPage(1);
+                  }}
                 >
                   Resolved ({stats.resolved})
                 </button>
@@ -525,10 +712,12 @@ export default function AdminDashboard() {
                 )}
               </div>
             ) : (
-              <div className="tickets-table-wrapper">
+              <>
+                <div className="tickets-table-wrapper">
                 <table className="tickets-table">
                   <thead>
                     <tr>
+                      <th>Ticket ID</th>
                       <th>User Details</th>
                       <th>Contact Info</th>
                       <th>Message</th>
@@ -539,35 +728,60 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tickets.map((t) => (
-                      <tr key={t._id} className={`ticket-row ticket-row--${t.status}`}>
+                    {tickets.map((t) => {
+                      const displayTicketId =
+                        t.ticketId || `GZ-${t._id.slice(-6).toUpperCase()}`;
+                      const isCopied = copiedTicketId === displayTicketId;
 
-                        {/* USER DETAILS */}
-                        <td className="user-col">
-                          <div className="user-name-wrapper">
-                            <strong className="user-full-name">{t.name}</strong>
-                            {t.username && (
-                              <span className="user-handle">
-                                <FiAtSign />
-                                {t.username}
-                              </span>
-                            )}
-                          </div>
-                        </td>
+                      return (
+                        <tr key={t._id} className={`ticket-row ticket-row--${t.status}`}>
 
-                        {/* CONTACT INFO */}
-                        <td className="contact-col">
-                          <div className="contact-links">
-                            <a
-                              href={`mailto:${t.email}`}
-                              className="contact-link"
-                              title="Send Email"
+                          {/* TICKET ID */}
+                          <td className="ticket-id-col">
+                            <button
+                              type="button"
+                              onClick={() => copyTicketId(displayTicketId)}
+                              className={`admin-ticket-id-pill ${
+                                isCopied ? "copied" : ""
+                              }`}
+                              title="Click to copy Ticket ID"
                             >
-                              <FiMail />
-                              <span>{t.email}</span>
-                            </a>
-                            {t.mobile && (
+                              <FiHash />
+                              <span>{displayTicketId}</span>
+                              {isCopied ? (
+                                <FiCheck className="pill-copy-icon" />
+                              ) : (
+                                <FiCopy className="pill-copy-icon" />
+                              )}
+                            </button>
+                          </td>
+
+                          {/* USER DETAILS */}
+                          <td className="user-col">
+                            <div className="user-name-wrapper">
+                              <strong className="user-full-name">{t.name}</strong>
+                              {t.username && (
+                                <span className="user-handle">
+                                  <FiAtSign />
+                                  {t.username}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* CONTACT INFO */}
+                          <td className="contact-col">
+                            <div className="contact-links">
                               <a
+                                href={`mailto:${t.email}`}
+                                className="contact-link"
+                                title="Send Email"
+                              >
+                                <FiMail />
+                                <span>{t.email}</span>
+                              </a>
+                              {t.mobile && (
+                                <a
                                 href={`tel:${t.mobile}`}
                                 className="contact-link phone-link"
                                 title="Call / WhatsApp"
@@ -660,11 +874,253 @@ export default function AdminDashboard() {
                         </td>
 
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* PAGINATION BAR (20 TICKETS PER PAGE) */}
+            {totalCount > 0 && (
+              <div className="admin-pagination-bar">
+                <div className="pagination-info">
+                  Showing <strong>{(currentPage - 1) * 20 + 1}</strong> - <strong>{Math.min(currentPage * 20, totalCount)}</strong> of <strong>{totalCount}</strong> tickets
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="pagination-controls">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1 || loading}
+                      className="page-nav-btn"
+                      title="Previous Page"
+                    >
+                      <FiChevronLeft />
+                      <span>Previous</span>
+                    </button>
+
+                    <div className="page-numbers-list">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter((p) => {
+                          if (totalPages <= 7) return true;
+                          if (p === 1 || p === totalPages) return true;
+                          if (Math.abs(p - currentPage) <= 1) return true;
+                          return false;
+                        })
+                        .map((pageNum, idx, arr) => {
+                          const prev = arr[idx - 1];
+                          const showEllipsis = prev && pageNum - prev > 1;
+
+                          return (
+                            <React.Fragment key={pageNum}>
+                              {showEllipsis && <span className="page-ellipsis">...</span>}
+                              <button
+                                type="button"
+                                onClick={() => setCurrentPage(pageNum)}
+                                disabled={loading}
+                                className={`page-num-btn ${
+                                  currentPage === pageNum ? "active" : ""
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            </React.Fragment>
+                          );
+                        })}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages || loading}
+                      className="page-nav-btn"
+                      title="Next Page"
+                    >
+                      <span>Next</span>
+                      <FiChevronRight />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
+            </>
+            )}
+
+          </div>
+        )}
+
+        {/* =========================================
+            HERO VIDEO MANAGEMENT TAB CONTENT
+        ========================================= */}
+        {activeTab === "video" && (
+          <div className="video-management-section">
+
+            {/* UPLOAD NEW VIDEO CARD */}
+            <div className="admin-video-upload-card">
+              <div className="section-card-header">
+                <div className="section-card-title">
+                  <FiUploadCloud className="section-title-icon" />
+                  <div>
+                    <h2>Upload New Hero Video</h2>
+                    <p>Select an MP4, WebM, or MOV video to display inside the phone mockup on the homepage hero section.</p>
+                  </div>
+                </div>
+              </div>
+
+              <form onSubmit={handleUploadVideo} className="video-upload-form">
+                <div className="video-form-row">
+                  <div className="form-group video-title-group">
+                    <label htmlFor="videoTitle">Video Title / Label</label>
+                    <input
+                      type="text"
+                      id="videoTitle"
+                      placeholder="e.g. GenZes App Demo 2026"
+                      value={videoTitle}
+                      onChange={(e) => setVideoTitle(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Select Video File (MP4, WebM, MOV, max 100MB)</label>
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime,video/mkv,video/m4v"
+                      onChange={handleVideoFileChange}
+                      className="video-file-input"
+                      id="videoFileInput"
+                    />
+                  </div>
+                </div>
+
+                {/* SELECTED VIDEO PREVIEW */}
+                {videoPreviewUrl && (
+                  <div className="selected-video-preview-box">
+                    <div className="preview-video-container">
+                      <video src={videoPreviewUrl} controls autoPlay muted playsInline />
+                    </div>
+                    <div className="preview-video-meta">
+                      <div>
+                        <strong>Selected File:</strong> {selectedVideoFile?.name}
+                        <small>Size: {(selectedVideoFile.size / (1024 * 1024)).toFixed(2)} MB</small>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeSelectedVideo}
+                        className="remove-selected-video-btn"
+                      >
+                        <FiX /> Remove File
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="video-upload-actions">
+                  <button
+                    type="submit"
+                    disabled={!selectedVideoFile || uploadingVideo}
+                    className="video-submit-btn"
+                  >
+                    {uploadingVideo ? (
+                      <>
+                        <span className="spinner" style={{ width: "16px", height: "16px" }} />
+                        <span>Uploading Video (Please wait)...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiUploadCloud />
+                        <span>Upload & Activate on Homepage</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* VIDEOS GALLERY / LIST */}
+            <div className="uploaded-videos-card">
+              <div className="section-card-header">
+                <div className="section-card-title">
+                  <FiVideo className="section-title-icon" />
+                  <div>
+                    <h2>Hero Videos Gallery ({videos.length})</h2>
+                    <p>All uploaded videos. Active videos automatically play in the smartphone mockup on the landing page.</p>
+                  </div>
+                </div>
+              </div>
+
+              {videoLoading ? (
+                <div className="admin-loading-state">
+                  <span className="spinner" />
+                  <p>Loading hero videos...</p>
+                </div>
+              ) : videos.length === 0 ? (
+                <div className="admin-empty-state">
+                  <FiVideo className="empty-icon" />
+                  <h3>No Custom Hero Videos Uploaded Yet</h3>
+                  <p>
+                    The landing page is currently playing the default built-in app videos (/video1.mp4, /video2.mp4, /video3.mp4). Upload your custom video above to replace them!
+                  </p>
+                </div>
+              ) : (
+                <div className="videos-grid">
+                  {videos.map((vid) => (
+                    <div
+                      key={vid._id}
+                      className={`video-item-card ${vid.isActive ? "video-item--active" : ""}`}
+                    >
+                      <div className="video-player-frame">
+                        <video
+                          src={getImageUrl(vid.videoUrl)}
+                          controls
+                          playsInline
+                          preload="metadata"
+                        />
+                        <span
+                          className={`video-status-badge ${
+                            vid.isActive ? "badge-active" : "badge-inactive"
+                          }`}
+                        >
+                          {vid.isActive ? "● Live on Homepage" : "○ Disabled"}
+                        </span>
+                      </div>
+
+                      <div className="video-card-body">
+                        <h4 className="video-card-title">{vid.title}</h4>
+                        <div className="video-card-meta">
+                          <span>Size: {(vid.fileSize / (1024 * 1024)).toFixed(2)} MB</span>
+                          <span>{formatDate(vid.createdAt)}</span>
+                        </div>
+
+                        <div className="video-card-controls">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleVideo(vid._id)}
+                            disabled={videoActionId === vid._id}
+                            className={`toggle-status-btn ${
+                              vid.isActive ? "btn-active" : "btn-inactive"
+                            }`}
+                          >
+                            {vid.isActive ? <FiCheckSquare /> : <FiSquare />}
+                            <span>{vid.isActive ? "Active (Live)" : "Set Active"}</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteVideo(vid._id)}
+                            disabled={videoActionId === vid._id}
+                            className="video-delete-btn"
+                            title="Delete Video"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
           </div>
         )}
@@ -754,6 +1210,27 @@ export default function AdminDashboard() {
             </div>
 
             <div className="modal-message-meta">
+              <div className="modal-ticket-id-meta">
+                <strong>Ticket ID:</strong>
+                <button
+                  type="button"
+                  className="modal-copy-ticket-pill"
+                  onClick={() =>
+                    copyTicketId(
+                      expandedMessage.ticketId ||
+                        `GZ-${expandedMessage._id.slice(-6).toUpperCase()}`
+                    )
+                  }
+                  title="Click to copy Ticket ID"
+                >
+                  <FiHash />
+                  <span>
+                    {expandedMessage.ticketId ||
+                      `GZ-${expandedMessage._id.slice(-6).toUpperCase()}`}
+                  </span>
+                  <FiCopy className="pill-copy-icon" />
+                </button>
+              </div>
               <div>
                 <strong>Email:</strong> {expandedMessage.email}
               </div>
@@ -768,7 +1245,8 @@ export default function AdminDashboard() {
                 </div>
               )}
               <div>
-                <strong>Submitted:</strong> {formatDate(expandedMessage.createdAt)}
+                <strong>Submitted:</strong>{" "}
+                {formatDate(expandedMessage.createdAt)}
               </div>
             </div>
 

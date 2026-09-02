@@ -1,6 +1,6 @@
 // API base URL configuration
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5055";
+  import.meta.env.VITE_API_URL || "https://genzes.in";
 
 // Helper to construct full image/file URLs
 export const getImageUrl = (imagePath) => {
@@ -91,11 +91,13 @@ export const getAdminStats = async (token) => {
 
 export const getSupportTickets = async (
   token,
-  { status = "all", search = "" } = {}
+  { status = "all", search = "", page = 1, limit = 20 } = {}
 ) => {
   const params = new URLSearchParams();
   if (status && status !== "all") params.append("status", status);
   if (search) params.append("search", search);
+  if (page) params.append("page", page);
+  if (limit) params.append("limit", limit);
 
   const url = `${API_BASE_URL}/api/admin/supports?${params.toString()}`;
 
@@ -130,4 +132,60 @@ export const deleteTicket = async (token, ticketId) => {
       },
     }
   );
+};
+
+// =========================================
+// HERO VIDEO API
+// =========================================
+
+export const getActiveVideos = async () => {
+  return await safeFetchJson(`${API_BASE_URL}/api/videos/active`);
+};
+
+export const getAllVideos = async (token) => {
+  return await safeFetchJson(`${API_BASE_URL}/api/videos/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const uploadHeroVideo = async (token, formData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/videos/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData, // multipart/form-data
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to upload video");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("uploadHeroVideo error:", error);
+    throw error;
+  }
+};
+
+export const toggleVideoStatus = async (token, videoId) => {
+  return await safeFetchJson(`${API_BASE_URL}/api/videos/${videoId}/toggle`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteHeroVideo = async (token, videoId) => {
+  return await safeFetchJson(`${API_BASE_URL}/api/videos/${videoId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
